@@ -1,0 +1,12 @@
+*/__pycache__
+.vscode
+/*.jpg
+/*.png
+config.json
+*test.py
+/test/
+/output/images/*.png/
+/output/images/*.jpg/
+/output/*.html/
+/output/*.txt/
+ 
