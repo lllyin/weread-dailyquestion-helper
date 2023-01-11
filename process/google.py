@@ -38,7 +38,8 @@ def search(wd):
   text_file.close()
 
 
-search('在传真机中,识别图像和文字的小装置是?')
+# search('在传真机中,识别图像和文字的小装置是?')
+search('谁是第一个进入BA打球的中国人?')
 # search('万_穿心')
 
 
