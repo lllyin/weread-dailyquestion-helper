@@ -31,6 +31,7 @@ if __name__ == "__main__":
     query = Query()
 
     quesImg, answImg = None, None
+    tmpQuesText = ''
 
     while True:
         tmpQuesImg, tmpAnswImg = sc.run()
@@ -41,19 +42,23 @@ if __name__ == "__main__":
         if not isSame(quesImg, tmpQuesImg):
             quesImg, answImg = tmpQuesImg, tmpAnswImg
             ques, answ = ocr.run(quesImg, answImg)
-            # print("---ocr result--")
-            # print(ques)
-            # print(answ)
-            freq, rightAnswer, hint = query.run(ques, answ)
-            print("问题: {}".format(ques))
-            print("正确答案: {}".format(rightAnswer))
-            freqText = ''
-            for index in range(len(freq)):
-                freqText += (answ[index] + ' :' + str(round(100 * freq[index], 1)) + '%    ')
-            print('概率: {}'.format(freqText))
-            print('依据: {}'.format(hint))
-            print()
-            print('-----------------')
-        time.sleep(0.8)
+
+            if (len(ques) > 0 and (tmpQuesText != ques)):
+                tmpQuesText = ques
+
+                # print("---ocr result--")
+                # print(ques)
+                # print(answ)
+                freq, rightAnswer, hint = query.run(ques, answ)
+                print("问题: {}".format(ques))
+                print("正确答案: {}".format(rightAnswer))
+                freqText = ''
+                for index in range(len(freq)):
+                    freqText += (answ[index] + ' :' + str(round(100 * freq[index], 1)) + '%    ')
+                print('概率: {}'.format(freqText))
+                print('依据: {}'.format(hint))
+                print()
+                print('-----------------')
+        time.sleep(0.1)
             
             

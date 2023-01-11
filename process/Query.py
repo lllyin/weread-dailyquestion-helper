@@ -4,7 +4,7 @@ import ssl
 from functools import reduce
 from urllib import request, parse
 from bs4 import BeautifulSoup
-from util import getOCRConfig
+from process.util import getOCRConfig
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -58,6 +58,8 @@ class Query:
 
 
     def run(self, question, answers):
+        if(len(answers) <= 0):
+            return [], None, None
         knowledge = None
         while(knowledge is None):
             knowledge = self._getKnowledge(question)
