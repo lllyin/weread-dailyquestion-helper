@@ -38,7 +38,6 @@ class Query:
                 'host': 'www.baidu.com',
                 'Cookie': config['BAIDU_COOKIE'],
             }
-        print(url)
         req = request.Request(url, headers=headers)
         response = opener.open(req) if SEARCH_ENGINE == 'GOOGLE' else (request.urlopen(req))
         content = response.read().decode('utf-8')
