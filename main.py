@@ -51,14 +51,15 @@ if __name__ == "__main__":
                 # print(answ)
                 freq, rightAnswer, hint = query.run(ques, answ)
                 print("问题: {}".format(ques))
-                print("正确答案: {}".format(rightAnswer))
+                print("\033[1;47;32m正确答案: {}\033[0m".format(rightAnswer))
                 freqText = ''
                 for index in range(len(freq)):
                     freqText += (answ[index] + ' :' + str(round(100 * freq[index], 1)) + '%    ')
                 print('概率: {}'.format(freqText))
                 print('依据: {}'.format(hint))
-                print()
                 print('-----------------')
+                print()
+
         time.sleep(0.1)
             
             
