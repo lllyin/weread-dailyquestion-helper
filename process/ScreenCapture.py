@@ -3,8 +3,8 @@ from PIL import ImageGrab
 from base64 import b64encode
 from io import BytesIO
 
-# mode = 'JIE_TU'
-mode = 'MINI_APP'
+mode = 'JIE_TU'
+# mode = 'MINI_APP'
 
 type = 'FRIEND_PK'
 # type = 'SELF_PK'
@@ -62,7 +62,7 @@ class ScreenCapture:
         quesImg.save('output/images/quesImg.png')
         ansImg.save('output/images/ansImg.png')
 
-        return quesImg, ansImg
+        return quesImg, ansImg, img
     
     
     def run(self):

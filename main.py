@@ -7,7 +7,9 @@ from PIL import ImageChops
 from process.ScreenCapture import ScreenCapture
 from process.OCR import OCR
 from process.Query import Query
+from process.Click import Click
 
+cc = Click(0, 77)
 
 def isSame(imgA, imgB):
     if imgA is None or imgB is None:
@@ -34,32 +36,34 @@ if __name__ == "__main__":
     tmpQuesText = ''
 
     while True:
-        tmpQuesImg, tmpAnswImg = sc.run()
+        tmpQuesImg, tmpAnswImg, appImg = sc.run()
 
         # print(tmpQuesImg)
         # print(tmpAnswImg)
 
         if not isSame(quesImg, tmpQuesImg):
-            quesImg, answImg = tmpQuesImg, tmpAnswImg
+            quesImg, answImg, appImg = tmpQuesImg, tmpAnswImg, appImg
             ques, answ = ocr.run(quesImg, answImg)
 
+            print(ques, answ)
             if (len(ques) > 0 and (tmpQuesText != ques)):
                 tmpQuesText = ques
 
-                # print("---ocr result--")
-                # print(ques)
-                # print(answ)
+                
                 freq, rightAnswer, hint = query.run(ques, answ)
-                print("问题: {}".format(ques))
-                print("\033[1;47;32m正确答案: {}\033[0m".format(rightAnswer))
-                freqText = ''
-                for index in range(len(freq)):
-                    freqText += (answ[index] + ' :' + str(round(100 * freq[index], 1)) + '%    ')
-                print('概率: {}'.format(freqText))
-                print('依据: {}'.format(hint))
-                print('-----------------')
-                print()
 
-        time.sleep(0.1)
+                if(rightAnswer is not None):
+                    print("问题: {}".format(ques))
+                    print("\033[1;47;32m正确答案: {}\033[0m".format(rightAnswer))
+                    freqText = ''
+                    for index in range(len(freq)):
+                        freqText += (answ[index] + ' :' + str(round(100 * freq[index], 1)) + '%    ')
+                    print('概率: {}'.format(freqText))
+                    print('依据: {}'.format(hint))
+                    cc.run(appImg, answ, rightAnswer)
+                    print('-----------------')
+                    print()
+
+        time.sleep(5)
             
             
