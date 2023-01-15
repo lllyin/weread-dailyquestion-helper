@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 import time
+import re
+import sys
 
 from PIL import ImageChops
 
@@ -10,6 +12,10 @@ from process.Query import Query
 from process.Click import Click
 
 cc = Click(0, 40)
+
+END_WORDS_DICT = {
+  "VICTORY": True
+}
 
 def isSame(imgA, imgB):
     if imgA is None or imgB is None:
@@ -45,9 +51,12 @@ if __name__ == "__main__":
             quesImg, answImg, appImg = tmpQuesImg, tmpAnswImg, appImg
             ques, answ = ocr.run(quesImg, answImg)
 
+            # 如果匹配victory｜defeat退出程序
+            if re.search('victory|defeat|defert|自动匹配|排行榜|看广告', "".join(answ), flags=re.I):
+                sys.exit()
+
             if (len(ques) > 0 and (tmpQuesText != ques)):
                 tmpQuesText = ques
-
                 
                 freq, rightAnswer, hint = query.run(ques, answ)
 
