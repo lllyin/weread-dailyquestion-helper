@@ -9,7 +9,7 @@ from process.OCR import OCR
 from process.Query import Query
 from process.Click import Click
 
-cc = Click(0, 77)
+cc = Click(0, 40)
 
 def isSame(imgA, imgB):
     if imgA is None or imgB is None:
@@ -45,7 +45,6 @@ if __name__ == "__main__":
             quesImg, answImg, appImg = tmpQuesImg, tmpAnswImg, appImg
             ques, answ = ocr.run(quesImg, answImg)
 
-            print(ques, answ)
             if (len(ques) > 0 and (tmpQuesText != ques)):
                 tmpQuesText = ques
 
@@ -64,6 +63,6 @@ if __name__ == "__main__":
                     print('-----------------')
                     print()
 
-        time.sleep(5)
+        time.sleep(0.1)
             
             

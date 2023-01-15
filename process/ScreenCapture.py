@@ -3,8 +3,8 @@ from PIL import ImageGrab
 from base64 import b64encode
 from io import BytesIO
 
-mode = 'JIE_TU'
-# mode = 'MINI_APP'
+# mode = 'JIE_TU'
+mode = 'MINI_APP'
 
 type = 'FRIEND_PK'
 # type = 'SELF_PK'
@@ -16,7 +16,7 @@ class ScreenCapture:
         #     raise Exception("没有找到'微信读书'小程序")
         if(mode == 'JIE_TU'):
             # 截图顶点调试
-            self.bound = (0, 80, 414, 736 + 80)
+            self.bound = (0, 90, 414, 736 + 80)
         else:
             # 笔记本小程序顶点截图
             self.bound = (0, 40, 414, 736 + 40)
@@ -58,9 +58,9 @@ class ScreenCapture:
             quesImg = img.crop((self.rpx(85), self.rpx(460 - 20), self.rpx(670), self.rpx(590 - 20)))
             ansImg = img.crop((self.rpx(85), self.rpx(590 - 20), self.rpx(670), self.rpx(1055 - 20)))
 
-        img.save('output/images/all.png')
-        quesImg.save('output/images/quesImg.png')
-        ansImg.save('output/images/ansImg.png')
+        # img.save('output/images/all.png')
+        # quesImg.save('output/images/quesImg.png')
+        # ansImg.save('output/images/ansImg.png')
 
         return quesImg, ansImg, img
     
