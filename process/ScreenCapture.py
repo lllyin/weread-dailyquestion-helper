@@ -11,9 +11,6 @@ type = 'FRIEND_PK'
 
 class ScreenCapture:
     def __init__(self):
-        # self.hwnd = win32gui.FindWindow(0, "微信读书")
-        # if self.hwnd == 0:
-        #     raise Exception("没有找到'微信读书'小程序")
         if(mode == 'JIE_TU'):
             # 截图顶点调试
             self.bound = (0, 90, 414, 736 + 80)
