@@ -69,14 +69,3 @@ class ScreenCapture:
         img = self._getCapture()
         return self._splitCapture(img)
         
-
-
-        
-
-        
-        
-
-        
-
-
-
