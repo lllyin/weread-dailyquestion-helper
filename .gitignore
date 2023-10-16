@@ -9,4 +9,4 @@ config.json
 /output/images/*.jpg/
 /output/*.html/
 /output/*.txt/
- 
+/output/*.png

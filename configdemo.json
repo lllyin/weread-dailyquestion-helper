@@ -1,6 +1,12 @@
 {
+    "game_type": "SELF_PK",
+    "capture_mode": "MINI_APP",
     "APP_ID": "xxx",
     "API_KEY": "xxx",
     "SECRET_KEY": "xxx",
-    "BAIDU_COOKIE": "百度账号cookie"
+    "llm_channel": "ernie",
+    "zhipu_key": "智谱key",
+    "ernie_key": "文心一言应用key",
+    "ernie_secret": "文心一言应用secret",
+    "BAIDU_COOKIE": "百度账号cookie；浏览器打开开发者工具，从网络请求中找到cookie复制到这里，注意双引号前加斜线"
 }

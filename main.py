@@ -10,12 +10,15 @@ from process.ScreenCapture import ScreenCapture
 from process.OCR import OCR
 from process.Query import Query
 from process.Click import Click
+from process.LLM import LLM
 
 cc = Click(0, 40)
 
 END_WORDS_DICT = {
   "VICTORY": True
 }
+
+re_exit = re.compile(r'victory|defeat|defert|自动匹配|排行榜|邀请好友|积分商城|体验卡|续命卡|再来一局|炫耀一下|看广告', flags=re.I)
 
 def isSame(imgA, imgB):
     if imgA is None or imgB is None:
@@ -34,42 +37,40 @@ def getOCRConfig():
 if __name__ == "__main__":
     config = getOCRConfig()
 
-    sc = ScreenCapture()
+    sc = ScreenCapture(config)
     ocr = OCR(config["APP_ID"], config["API_KEY"], config["SECRET_KEY"])
-    query = Query()
+    # query = Query()
+    llm = LLM(config)
 
     quesImg, answImg = None, None
     tmpQuesText = ''
 
     while True:
-        tmpQuesImg, tmpAnswImg, appImg = sc.run()
+        tmpQuesImg, appImg = sc.run()
 
         # print(tmpQuesImg)
         # print(tmpAnswImg)
 
         if not isSame(quesImg, tmpQuesImg):
-            quesImg, answImg, appImg = tmpQuesImg, tmpAnswImg, appImg
-            ques, answ = ocr.run(quesImg, answImg)
+            print('发现新图片，OCR识别文字...')
+            quesImg, appImg = tmpQuesImg, appImg
+            ques = ocr.run(quesImg)
 
             # 如果匹配victory｜defeat退出程序
-            if re.search('victory|defeat|defert|自动匹配|排行榜|看广告', "".join(answ), flags=re.I):
+            if re_exit.search("".join(ques)):
+                print('问答结束，退出...')
                 sys.exit()
 
             if (len(ques) > 0 and (tmpQuesText != ques)):
                 tmpQuesText = ques
+                print("问题: {}".format(ques))
                 
-                freq, rightAnswer, hint = query.run(ques, answ)
+                result = llm.run(ques)
 
-                if(rightAnswer is not None):
-                    print("问题: {}".format(ques))
-                    print("\033[1;47;32m正确答案: {}\033[0m".format(rightAnswer))
-                    freqText = ''
-                    for index in range(len(freq)):
-                        freqText += (answ[index] + ' :' + str(round(100 * freq[index], 1)) + '%    ')
-                    print('概率: {}'.format(freqText))
-                    print('依据: {}'.format(hint))
-                    cc.run(appImg, answ, rightAnswer)
-                    print('-----------------')
-                    print()
+                print('-----------------')
+                print(f'AI回答: {result}')
+                # cc.run(appImg, answ, rightAnswer)
+                print('-----------------')
+                print()
 
-        time.sleep(0.1)
+        time.sleep(0.3)
