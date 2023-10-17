@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import requests
 import json
-tpl = """你是无所不知的百科问答小助手，请根据下面问题和选项，选出正确的选项。不要解释，不要回复其他任何内容。
-问题：{question}"""
+tpl = """
+问题：{question}
+选项：{options}
+你是无所不知的百科问答小助手，请根据下面问题和选项，选出正确的选项。回复不要超过10个字，不要解释，不要回复其他任何内容。"""
 
 json_req_headers = {
     'Content-Type': 'application/json',
@@ -22,9 +24,9 @@ class LLM:
             import zhipuai
             zhipuai.api_key = config['zhipu_key']
 
-    def zhipu(self, question):
+    def zhipu(self, question, options):
         import zhipuai
-        content = tpl.format(question=question)
+        content = tpl.format(question=question, options='   '.join(options))
         res = zhipuai.model_api.invoke(
             model="chatglm_pro",
             prompt=[
@@ -47,9 +49,9 @@ class LLM:
             raise ValueError(f'init ernie fail: {rsp_data}')
     
 
-    def ernie(self, question):
+    def ernie(self, question, options):
         url = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions?access_token=" + self.ernie_token
-        content = tpl.format(question=question)
+        content = tpl.format(question=question, options='   '.join(options))
         payload = json.dumps({
             "messages": [
                 {
@@ -66,7 +68,7 @@ class LLM:
         return res_text
 
 
-    def run(self, question):
+    def run(self, question, options):
         func = getattr(self, self.channel)
-        return func(question)
+        return func(question, options)
     

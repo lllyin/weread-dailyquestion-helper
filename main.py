@@ -54,18 +54,18 @@ if __name__ == "__main__":
         if not isSame(quesImg, tmpQuesImg):
             print('发现新图片，OCR识别文字...')
             quesImg, appImg = tmpQuesImg, appImg
-            ques = ocr.run(quesImg)
+            ques, options = ocr.run(quesImg)
 
             # 如果匹配victory｜defeat退出程序
-            if re_exit.search("".join(ques)):
+            if re_exit.search("".join(options)):
                 print('问答结束，退出...')
                 sys.exit()
 
             if (len(ques) > 0 and (tmpQuesText != ques)):
                 tmpQuesText = ques
-                print("问题: {}".format(ques))
+                print("问题: {}选项：{}".format(ques, options))
                 
-                result = llm.run(ques)
+                result = llm.run(ques, options)
 
                 print('-----------------')
                 print(f'AI回答: {result}')
