@@ -34,7 +34,7 @@ def getOCRConfig():
         return json.load(fp)
 
 
-if __name__ == "__main__":
+def run_main():
     config = getOCRConfig()
 
     sc = ScreenCapture(config)
@@ -74,3 +74,18 @@ if __name__ == "__main__":
                 print()
 
         time.sleep(0.3)
+
+
+def test_ai():
+    config = getOCRConfig()
+    llm = LLM(config)
+    ques = '朝露  至'
+    options = ['磕', '堪']
+    result = llm.run(ques, options)
+    print(ques, options)
+    print(result)
+
+
+if __name__ == "__main__":
+    run_main()
+    # test_ai()
