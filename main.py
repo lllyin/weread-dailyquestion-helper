@@ -11,6 +11,7 @@ from process.OCR import OCR
 from process.Query import Query
 from process.Click import Click
 from process.LLM import LLM
+from concurrent.futures import ThreadPoolExecutor
 
 cc = Click(0, 40)
 
@@ -39,7 +40,7 @@ def run_main():
 
     sc = ScreenCapture(config)
     ocr = OCR(config["APP_ID"], config["API_KEY"], config["SECRET_KEY"])
-    # query = Query()
+    query = Query()
     llm = LLM(config)
 
     quesImg, answImg = None, None
@@ -65,27 +66,42 @@ def run_main():
                 tmpQuesText = ques
                 print("问题: {}选项：{}".format(ques, options))
                 
-                result = llm.run(ques, options)
-
-                print('-----------------')
-                print(f'AI回答: {result}')
-                # cc.run(appImg, answ, rightAnswer)
+                def run_llm():
+                    result = llm.run(ques, options)
+                    print('-----------------')
+                    print(f'AI回答: {result}')
+                
+                def run_query():
+                    result = query.run(ques, options)
+                    print('-----------------')
+                    print(f'搜索结果: {result}')
+                
+                with ThreadPoolExecutor(max_workers=2) as executor:
+                    executor.submit(run_llm)
+                    try:
+                        executor.submit(run_query).result(timeout=1)
+                    except Exception:
+                        pass
+                    executor.shutdown(wait=True)
+                    
                 print('-----------------')
                 print()
 
         time.sleep(0.3)
 
 
-def test_ai():
+def test_ans():
     config = getOCRConfig()
     llm = LLM(config)
-    ques = '朝露  至'
-    options = ['磕', '堪']
-    result = llm.run(ques, options)
+    query = Query()
+    ques = '国际奥委会是哪年成立的？'
+    options = ['1B94年', '1905年']
+    # result = llm.run(ques, options)
+    result = query.run(ques, options)
     print(ques, options)
     print(result)
 
 
 if __name__ == "__main__":
     run_main()
-    # test_ai()
+    # test_ans()
