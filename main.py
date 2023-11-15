@@ -39,7 +39,7 @@ def run_main():
     config = getOCRConfig()
 
     sc = ScreenCapture(config)
-    ocr = OCR(config["APP_ID"], config["API_KEY"], config["SECRET_KEY"])
+    ocr = OCR(config)
     query = Query()
     llm = LLM(config)
 
@@ -70,6 +70,8 @@ def run_main():
                     result = llm.run(ques, options)
                     print('-----------------')
                     print(f'AI回答: {result}')
+                    print('-' * 70)
+                    print('\n')
                 
                 def run_query():
                     result = query.run(ques, options)

@@ -36,7 +36,7 @@ class ScreenCapture:
     # 截图
     def _getCapture(self):
         img = ImageGrab.grab(self.bound)
-        # img = Image.open('output/images/all.png')
+        # img = Image.open('output/images/yu.png')
         return img
 
 
