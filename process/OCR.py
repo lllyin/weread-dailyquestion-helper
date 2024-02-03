@@ -58,6 +58,55 @@ class OCR:
             ques_bd.write('\n')
         return ques_bd.getvalue(), options
     
+    def _volc(self, img):
+        action = 'OCRNormal'
+        if not self.client:
+            import os
+            os.environ['VOLC_ACCESSKEY'] = self.config["API_KEY"]
+            os.environ['VOLC_SECRETKEY'] = self.config["SECRET_KEY"]
+            from volcengine.visual.VisualService import VisualService
+            self.client = VisualService()
+            self.client.set_api_info(action, '2020-08-26')
+        bodys = dict(image_base64=str(base64.b64encode(img), encoding='utf-8'))
+        response = self.client.ocr_api(action, bodys)
+        if response.get('code') != 10000:
+            raise ValueError(f'volc ocr fail: {response}')
+        rsp_data = response['data']
+        if not rsp_data:
+            raise ValueError(f'volc ocr empty: {response}')
+        ques_bd = StringIO()
+        options = []  # 记录所有选项
+        vert_top, horz_end = 0, 0
+        blocks = rsp_data.get('line_texts')
+        polygons = rsp_data['polygons']
+        for i, text in enumerate(blocks):
+            box = polygons[i]  # [左上, 右上, 右下, 左下]
+            coords = [p for p in sort_box(box)]
+            if coords[0][1] > self.ques_end:
+                # 达到了选项部分
+                options.append(text)
+                continue
+            vert_top, horz_end = self._update_ocr_block(ques_bd, coords, text, vert_top, horz_end)
+        ques_bd.write('\n')
+        return ques_bd.getvalue(), options
+
+    def _update_ocr_block(self, ques_bd: StringIO, coords: List[List], text: str, vert_top, horz_end):
+        top = (coords[0][1] + coords[1][1]) / 2
+        left = (coords[0][0] + coords[3][0]) / 2
+        width = (coords[1][0] + coords[2][0] - coords[0][0] - coords[3][0]) / 2
+        height = (coords[2][1] + coords[3][1] - coords[0][1] - coords[1][1]) / 2
+        if vert_top > 0 and top - vert_top > height * 0.8:
+            ques_bd.write('\n')
+            horz_end = -1
+        if horz_end > 0:
+            blank_num = (left - horz_end) / width > 0.8
+            if blank_num:
+                ques_bd.write('  ' * blank_num)
+        ques_bd.write(text)
+        vert_top = top
+        horz_end = left + width
+        return vert_top, horz_end
+
     def _huawei(self, img):
         if not self.client:
             credentials = BasicCredentials(self.config["API_KEY"], self.config["SECRET_KEY"])
@@ -105,20 +154,7 @@ class OCR:
                 # 达到了选项部分
                 options.append(text)
                 continue
-            top = (coords[0][1] + coords[1][1]) / 2
-            left = (coords[0][0] + coords[3][0]) / 2
-            width = (coords[1][0] + coords[2][0] - coords[0][0] - coords[3][0]) / 2
-            height = (coords[2][1] + coords[3][1] - coords[0][1] - coords[1][1]) / 2
-            if vert_top > 0 and top - vert_top > height * 0.8:
-                ques_bd.write('\n')
-                horz_end = -1
-            if horz_end > 0:
-                blank_num = (left - horz_end) / width > 0.8
-                if blank_num:
-                    ques_bd.write('  ' * blank_num)
-            ques_bd.write(text)
-            vert_top = top
-            horz_end = left + width
+            vert_top, horz_end = self._update_ocr_block(ques_bd, coords, text, vert_top, horz_end)
         ques_bd.write('\n')
         return ques_bd.getvalue(), options
 
@@ -129,6 +165,8 @@ class OCR:
             return self._baidu(imgBin)
         elif self.channel == 'huawei':
             return self._huawei(imgBin)
+        elif self.channel == 'volc':
+            return self._volc(imgBin)
         else:
             raise ValueError(f'invalid ocr channel: {self.channel}')
 

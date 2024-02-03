@@ -10,6 +10,7 @@ box_bound = (0, 0, 622, 1170)
 pk_rates = (0.1, 0.909, 0.414, 0.537, 0.824)
 # 每日一答：左侧比率，右侧比率，问题顶部比率，问题底部比率，答案底部比率
 yida_rates = (0.1, 0.909, 0.312, 0.404, 0.734)
+# yida_rates = (0.1, 0.909, 0.313, 0.408, 0.735)
 
 class ScreenCapture:
     def __init__(self, config: dict):
@@ -36,7 +37,7 @@ class ScreenCapture:
     # 截图
     def _getCapture(self):
         img = ImageGrab.grab(self.bound)
-        # img = Image.open('output/images/yu.png')
+        # img = Image.open('output/images/ques.png')
         return img
 
 

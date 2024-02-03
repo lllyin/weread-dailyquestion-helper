@@ -11,7 +11,7 @@ from process.OCR import OCR
 from process.Query import Query
 from process.Click import Click
 from process.LLM import LLM
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 
 cc = Click(0, 40)
 
@@ -45,6 +45,7 @@ def run_main():
 
     quesImg, answImg = None, None
     tmpQuesText = ''
+    tmpOptText = ''
 
     while True:
         tmpQuesImg, appImg = sc.run()
@@ -58,12 +59,14 @@ def run_main():
             ques, options = ocr.run(quesImg)
 
             # 如果匹配victory｜defeat退出程序
-            if re_exit.search("".join(options)):
+            opt_text = "".join(options)
+            if re_exit.search(opt_text):
                 print('问答结束，退出...')
                 sys.exit()
 
-            if (len(ques) > 0 and (tmpQuesText != ques)):
+            if (len(ques) > 0 and (tmpQuesText != ques) and tmpOptText != opt_text):
                 tmpQuesText = ques
+                tmpOptText = opt_text
                 print("问题: {}选项：{}".format(ques, options))
                 
                 def run_llm():
@@ -74,20 +77,23 @@ def run_main():
                     print('\n')
                 
                 def run_query():
-                    result = query.run(ques, options)
+                    rates, answer, descp = query.run(ques, options)
                     print('-----------------')
-                    print(f'搜索结果: {result}')
+                    print(f'搜索答案: {answer}')
+                    opt_rate = '    '.join([f'{o}: {rates[i]}' for i, o in enumerate(options)])
+                    print(f'概率: {opt_rate}')
+                    print(f'解释：{descp}')
                 
                 with ThreadPoolExecutor(max_workers=2) as executor:
-                    executor.submit(run_llm)
-                    try:
-                        executor.submit(run_query).result(timeout=1)
-                    except Exception:
-                        pass
-                    executor.shutdown(wait=True)
+                    task1 = executor.submit(run_llm)
+                    task2 = executor.submit(run_query)
+                    # 等待最多8s
+                    wait([task1, task2], timeout=8, return_when=ALL_COMPLETED)
                     
                 print('-----------------')
                 print()
+            else:
+                print("-- 问题: {}选项：{}".format(ques, options))
 
         time.sleep(0.3)
 
