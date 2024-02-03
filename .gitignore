@@ -9,4 +9,5 @@ config.json
 /output/images/*.jpg/
 /output/*.html/
 /output/*.txt/
- 
+/output/*.png
+https_weread.qq.com_0.indexeddb.leveldb
