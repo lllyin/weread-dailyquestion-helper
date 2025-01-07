@@ -9,4 +9,6 @@ config.json
 /output/images/*.jpg/
 /output/*.html/
 /output/*.txt/
+venv
+logs
  

@@ -3,6 +3,7 @@ import json
 import time
 import re
 import sys
+import logging
 
 from PIL import ImageChops
 
@@ -10,6 +11,7 @@ from process.ScreenCapture import ScreenCapture
 from process.OCR import OCR
 from process.Query import Query
 from process.Click import Click
+from process.logger import logger
 
 cc = Click(0, 40)
 
@@ -61,15 +63,15 @@ if __name__ == "__main__":
                 freq, rightAnswer, hint = query.run(ques, answ)
 
                 if(rightAnswer is not None):
-                    print("问题: {}".format(ques))
-                    print("\033[1;47;32m正确答案: {}\033[0m".format(rightAnswer))
+                    logger.info("问题: %s", ques)
+                    logger.info("\033[1;47;32m正确答案: %s\033[0m", rightAnswer)
                     freqText = ''
                     for index in range(len(freq)):
                         freqText += (answ[index] + ' :' + str(round(100 * freq[index], 1)) + '%    ')
-                    print('概率: {}'.format(freqText))
-                    print('依据: {}'.format(hint))
+                    logger.info('概率: %s', freqText)
+                    logger.info('依据: %s', hint)
                     cc.run(appImg, answ, rightAnswer)
-                    print('-----------------')
-                    print()
+                    logger.info('-----------------')
+                    logger.info('')
 
         time.sleep(0.1)

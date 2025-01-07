@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from aip import AipOcr
 import io
+from process.logger import logger
 
 class OCR:
 
@@ -24,4 +25,3 @@ class OCR:
         answ = [item['words'] for item in answ['words_result']]
 
         return ques, answ
-
