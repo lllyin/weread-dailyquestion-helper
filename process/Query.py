@@ -5,6 +5,7 @@ from functools import reduce
 from urllib import request, parse
 from bs4 import BeautifulSoup
 from process.util import getOCRConfig
+from process.logger import logger
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -45,16 +46,18 @@ class Query:
         knowledge = soup.get_text()
         if('网络不给力，请稍后重试' in knowledge):
             time.sleep(0.5)
-            print('怕不是被封了…')
+            logger.warning('怕不是被封了…')
             return None
         return knowledge
 
     def _query(self, knowledge, answers):
         freq = [knowledge.count(item) + 1 for item in answers]
+        logger.debug("原始频率: %s", freq)
         rightAnswer = None
         hint = None
 
         if freq.count(1) == len(answers):
+            logger.debug("所有答案出现次数相同，使用字符级别匹配")
             freqDict = {}
             for item in answers:
                 for char in item:
@@ -63,12 +66,19 @@ class Query:
             for index in range(len(answers)):
                 for char in answers[index]:
                     freq[index] += freqDict[char]
+            logger.debug("字符级别匹配后的频率: %s", freq)
             rightAnswer = answers[freq.index(max(freq))]
         else:
+            logger.debug("使用答案级别匹配")
             rightAnswer = answers[freq.index(max(freq))]
-            threshold = 50 # 前后50字符
-            hintIndex = max(knowledge.index(rightAnswer), threshold)
-            hint = ''.join(knowledge[hintIndex - threshold : hintIndex + threshold].split())
+            try:
+                threshold = 50 # 前后50字符
+                hintIndex = max(knowledge.index(rightAnswer), threshold)
+                hint = ''.join(knowledge[hintIndex - threshold : hintIndex + threshold].split())
+                logger.debug("找到答案上下文")
+            except ValueError:
+                logger.debug("无法在知识库中找到正确答案的位置")
+                hint = None
         
         sum = reduce(lambda a,b : a+b, freq)
         return [f / sum for f in freq], rightAnswer, hint
@@ -80,11 +90,12 @@ class Query:
         knowledge = None
         while(knowledge is None):
             knowledge = self._getKnowledge(question)
+        logger.debug("问题: %s", question)
+        logger.debug("答案列表: %s", answers)
+        logger.debug("知识库长度: %d", len(knowledge))
         try:
             freq, rightAnswer, hint = self._query(knowledge, answers)
         except Exception as e:
-            print('出现异常', e)
+            logger.error('出现异常: %s', str(e))
             freq, rightAnswer, hint = [], None, None
         return freq, rightAnswer, hint
-
-        

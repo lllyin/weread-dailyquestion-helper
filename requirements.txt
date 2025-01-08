@@ -2,3 +2,5 @@
 beautifulsoup4==4.9.1
 html5lib==1.1
 Pillow==9.3.0
+pyautogui==0.9.54
+opencv-python==4.10.0.84
