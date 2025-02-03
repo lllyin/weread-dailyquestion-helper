@@ -1,15 +1,17 @@
-import base64
-import json  
 import os
 from openai import OpenAI
+
+
 
 client = OpenAI(
     api_key=os.environ.get('API_SILICON_KEY'), # 从https://cloud.siliconflow.cn/account/ak获取
     base_url="https://api.siliconflow.cn/v1"
 )
-def getResponse(base64img):
+
+def getResponse(base64imgurl):
+    
     response = client.chat.completions.create(
-            model="Qwen/Qwen2-VL-72B-Instruct",
+            model="Qwen/Qwen2-VL-72B-Instruct",            
             messages=[
             {
                 "role": "user",
@@ -17,7 +19,7 @@ def getResponse(base64img):
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": f"data:image/jpeg;base64,{base64img}",
+                            "url": base64imgurl,
                             "detail":"low"
                         }
                     },
@@ -34,8 +36,8 @@ def getResponse(base64img):
     strdata = ""
     for chunk in response:
         chunk_message = chunk.choices[0].delta.content
-        strdata = strdata + " " + chunk_message
+        strdata = strdata + chunk_message
         #print(chunk_message, end='', flush=True)
-    print("strdata")
+    #print(strdata)
     
     return strdata
