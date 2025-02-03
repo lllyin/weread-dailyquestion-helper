@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 from PIL import ImageGrab
 from base64 import b64encode
 from io import BytesIO
@@ -64,5 +65,5 @@ class ScreenCapture:
     
     def run(self):
         img = self._getCapture()
-        return self._splitCapture(img)
+        return base64(self,img)
         
