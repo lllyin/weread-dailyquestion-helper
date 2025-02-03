@@ -1,9 +1,10 @@
 import base64
 import json  
+import os
 from openai import OpenAI
 
 client = OpenAI(
-    api_key="您的 APIKEY", # 从https://cloud.siliconflow.cn/account/ak获取
+    api_key=os.environ.get('API_SILICON_KEY'), # 从https://cloud.siliconflow.cn/account/ak获取
     base_url="https://api.siliconflow.cn/v1"
 )
 def getResponse(base64img):
