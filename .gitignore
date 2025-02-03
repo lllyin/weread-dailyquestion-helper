@@ -11,4 +11,6 @@ config.json
 /output/*.txt/
 venv
 logs
- 
+
+# Environment variables
+.env
