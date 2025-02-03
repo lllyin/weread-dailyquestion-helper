@@ -11,4 +11,3 @@ config.json
 /output/*.txt/
 venv
 logs
- 
